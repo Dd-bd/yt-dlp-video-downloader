@@ -1,27 +1,36 @@
 @echo off
-chcp 65001 >nul
-title YT-DLP 视频下载器
+title YT-DLP Video Downloader
 cd /d "%~dp0"
 
 set "PY=python"
 where python >nul 2>nul
 if errorlevel 1 set "PY=py"
 
-rem ---- 检查依赖是否安装完整 ----
+rem ---- Check dependencies ----
 %PY% -c "import flask, webview, psutil, yt_dlp" >nul 2>nul
 if errorlevel 1 (
-    echo [提示] 依赖未安装完整，请先双击 install.bat 完成安装
+    echo [WARN] Dependencies not installed. Run install.bat first.
     pause
     exit /b 1
 )
 
-rem ---- 检查 Cookie ----
+rem ---- Check cookies ----
 if not exist "cookies.txt" (
-    echo [提示] 未找到 cookies.txt，部分网站可能无法下载
-    echo        请参考 README.md 的「导出 Cookie」一节，导出后放入本目录
+    echo [WARN] cookies.txt not found. Some sites may fail to download.
+    echo        See README.md "Export Cookie" section for help.
     echo.
 )
 
-echo 正在启动，请稍候...
+rem ---- Check ffmpeg ----
+where ffmpeg >nul 2>nul
+if errorlevel 1 (
+    if not exist "ffmpeg.exe" (
+        echo [WARN] ffmpeg not found. 4K/merge will fall back to lower quality.
+        echo        Run install.bat again, or put ffmpeg.exe in this folder.
+        echo.
+    )
+)
+
+echo Starting, please wait...
 %PY% app.py
 pause
