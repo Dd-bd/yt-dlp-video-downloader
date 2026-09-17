@@ -116,11 +116,16 @@ Many sites (YouTube, Bilibili, etc.) won't let you download, or only offer low q
 
 | Item · 项目 | Description · 说明 |
 | --- | --- |
-| Video links / 视频链接 | Paste links, one per line; playlist links are supported (the whole list is downloaded) / 粘贴链接，一行一条；支持播放列表链接（会下载整个列表） |
-| Filename / 保存文件名 | Leave blank to use the video title; batch downloads get a number suffix like `name_1`, `name_2` / 留空则自动使用视频标题；批量下载会自动加序号 `名称_1`、`名称_2` |
-| Resolution / 视频清晰度 | Choose a resolution; if the video lacks it, it falls back to the closest one / 选择分辨率；视频没有该清晰度时会自动回退到最接近的 |
-| Danmaku toggle / 弹幕开关 | When on, danmaku/subtitles (xml) are downloaded too / 打开后同时下载弹幕/字幕（xml） |
-| Download tasks / 下载任务 | Shows each task's progress and status; click "Open folder" when done / 显示每个任务的进度、状态；完成后可点「打开文件夹」查看 |
+| Video links / 视频链接 | Paste links, one per line; playlist links are supported (the whole list is downloaded)
+粘贴链接，一行一条；支持播放列表链接（会下载整个列表） |
+| Filename / 保存文件名 | Leave blank to use the video title; batch downloads get a number suffix like `name_1`, `name_2`
+留空则自动使用视频标题；批量下载会自动加序号 `名称_1`、`名称_2` |
+| Resolution / 视频清晰度 | Choose a resolution; if the video lacks it, it falls back to the closest one
+选择分辨率；视频没有该清晰度时会自动回退到最接近的 |
+| Danmaku toggle / 弹幕开关 | When on, danmaku/subtitles (xml) are downloaded too
+打开后同时下载弹幕/字幕（xml） |
+| Download tasks / 下载任务 | Shows each task's progress and status; click "Open folder" when done
+显示每个任务的进度、状态；完成后可点「打开文件夹」查看 |
 
 Downloaded files are saved in the **`downloads`** folder inside the program folder.
 下载的文件保存在程序文件夹下的 **`downloads`** 目录中。
@@ -130,31 +135,41 @@ Downloaded files are saved in the **`downloads`** folder inside the program fold
 ## FAQ · 常见问题
 
 **Q1: install.bat flashes and closes / says Python can't be found? · 双击 install.bat 一闪而过 / 提示找不到 Python？**
+
 Python isn't installed, or "Add Python to PATH" wasn't checked. Reinstall and check it, or add Python to your system PATH manually.
 Python 未安装，或安装时没勾选 "Add Python to PATH"。重新安装并勾选，或手动把 Python 加入系统 PATH。
 
 **Q2: The window is blank / the interface won't open after launch? · 启动后窗口空白 / 打不开界面？**
+
 Usually the dependencies weren't fully installed. Double-click `install.bat` and `download_ffmpeg.bat` again to finish the install, then retry.
 通常是依赖没装完整。重新双击 `install.bat`和`download_ffmpeg.bat` 完成安装后再试。
 
 **Q3: A yellow "cookies.txt not found" notice appears at the top? · 顶部出现「未找到 cookies.txt」的黄色提示？**
+
 Cookies are optional: you can still download from some sites, but YouTube, Bilibili, etc. may fail or be quality-limited. Export the Cookie as described above, put it in this folder, and restart the program to remove the notice.
 Cookie 是可选配置：不配置也能下载部分网站，但 YouTube、B站 等可能失败或画质受限。按上文「导出 Cookie」导出后放入本文件夹，重启程序即可消除提示。
 
 **Q4: Download fails with "link or Cookie may have expired"? · 下载失败，提示「链接或 Cookie 可能已失效」？**
+
 Most likely the Cookie has expired (Cookies generally last a few weeks). Export a fresh `cookies.txt` and overwrite the old one.
 大概率是 Cookie 过期了（Cookie 一般几周内有效）。重新导出一份新的 `cookies.txt` 覆盖即可。
 
 **Q5: I chose 4K but the download isn't 4K? · 选择 4K 但下载出来不是 4K？**
+
 That video has no 4K version; yt-dlp falls back to the closest resolution automatically.
 该视频本身没有 4K 版本，yt-dlp 会自动回退到最接近的清晰度。
 
 **Q6: deno or ffmpeg failed to download? · deno 或 ffmpeg 下载失败？**
-- ffmpeg: double-click `download_ffmpeg.bat` to re-download it alone (with retries and integrity check), or manually download the "release essentials" package from <https://www.gyan.dev/ffmpeg/builds/> and put `bin\ffmpeg.exe` into this folder. / 双击 `download_ffmpeg.bat` 单独重下（带重试和完整性校验），或手动下载 <https://www.gyan.dev/ffmpeg/builds/> 的 "release essentials" 包，把 `bin\ffmpeg.exe` 放入本文件夹。
-- deno: double-click `install.bat` to retry, or manually download from <https://github.com/denoland/deno/releases> (Windows zip; extract `deno.exe` into this folder). / 重新双击 `install.bat` 重试，或手动下载 <https://github.com/denoland/deno/releases>（Windows 版 zip，解压出 `deno.exe` 放入本文件夹）。
-- You can also install with winget: `winget install DenoLand.Deno`, `winget install Gyan.FFmpeg`. / 也可用 winget 一键安装：`winget install DenoLand.Deno`、`winget install Gyan.FFmpeg`。
+
+- ffmpeg: double-click `download_ffmpeg.bat` to re-download it alone (with retries and integrity check), or manually download the "release essentials" package from <https://www.gyan.dev/ffmpeg/builds/> and put `bin\ffmpeg.exe` into this folder.
+- 双击 `download_ffmpeg.bat` 单独重下（带重试和完整性校验），或手动下载 <https://www.gyan.dev/ffmpeg/builds/> 的 "release essentials" 包，把 `bin\ffmpeg.exe` 放入本文件夹。
+- deno: double-click `install.bat` to retry, or manually download from <https://github.com/denoland/deno/releases> (Windows zip; extract `deno.exe` into this folder).
+- 重新双击 `install.bat` 重试，或手动下载 <https://github.com/denoland/deno/releases>（Windows 版 zip，解压出 `deno.exe` 放入本文件夹）。
+- You can also install with winget: `winget install DenoLand.Deno`, `winget install Gyan.FFmpeg`.
+- 也可用 winget 一键安装：`winget install DenoLand.Deno`、`winget install Gyan.FFmpeg`。
 
 **Q7: What if the port is already in use? · 端口被占用怎么办？**
+
 The program picks another available port automatically — no action needed.
 程序会自动更换可用端口，无需处理。
 
@@ -196,9 +211,12 @@ yt-dlp-video-downloader/
 
 ## Disclaimer · 免责声明
 
-- This tool is for **personal study and backing up content you are authorized to access** only. / 本工具仅供**个人学习、备份自己有权访问的内容**使用。
-- Please comply with the target sites' terms of service and local laws and regulations. **Do not download copyrighted or unauthorized content**, and do not use it commercially. / 请遵守目标网站的服务条款与当地法律法规，**勿下载受版权保护或未授权的内容**，勿用于商业用途。
-- Users take full responsibility for any consequences of downloading. / 下载行为产生的一切后果由使用者自行承担。
+- This tool is for **personal study and backing up content you are authorized to access** only.
+- 本工具仅供**个人学习、备份自己有权访问的内容**使用。
+- Please comply with the target sites' terms of service and local laws and regulations. **Do not download copyrighted or unauthorized content**, and do not use it commercially.
+- 请遵守目标网站的服务条款与当地法律法规，**勿下载受版权保护或未授权的内容**，勿用于商业用途。
+- Users take full responsibility for any consequences of downloading.
+- 下载行为产生的一切后果由使用者自行承担。
 
 ---
 
