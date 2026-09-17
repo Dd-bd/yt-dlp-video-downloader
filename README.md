@@ -116,16 +116,11 @@ Many sites (YouTube, Bilibili, etc.) won't let you download, or only offer low q
 
 | Item · 项目 | Description · 说明 |
 | --- | --- |
-| Video links / 视频链接 | Paste links, one per line; playlist links are supported (the whole list is downloaded)
-粘贴链接，一行一条；支持播放列表链接（会下载整个列表） |
-| Filename / 保存文件名 | Leave blank to use the video title; batch downloads get a number suffix like `name_1`, `name_2`
-留空则自动使用视频标题；批量下载会自动加序号 `名称_1`、`名称_2` |
-| Resolution / 视频清晰度 | Choose a resolution; if the video lacks it, it falls back to the closest one
-选择分辨率；视频没有该清晰度时会自动回退到最接近的 |
-| Danmaku toggle / 弹幕开关 | When on, danmaku/subtitles (xml) are downloaded too
-打开后同时下载弹幕/字幕（xml） |
-| Download tasks / 下载任务 | Shows each task's progress and status; click "Open folder" when done
-显示每个任务的进度、状态；完成后可点「打开文件夹」查看 |
+| Video links / 视频链接 | Paste links, one per line; playlist links are supported (the whole list is downloaded)/粘贴链接，一行一条；支持播放列表链接（会下载整个列表） |
+| Filename / 保存文件名 | Leave blank to use the video title; batch downloads get a number suffix like `name_1`, `name_2`/留空则自动使用视频标题；批量下载会自动加序号 `名称_1`、`名称_2` |
+| Resolution / 视频清晰度 | Choose a resolution; if the video lacks it, it falls back to the closest one/选择分辨率；视频没有该清晰度时会自动回退到最接近的 |
+| Danmaku toggle / 弹幕开关 | When on, danmaku/subtitles (xml) are downloaded too/打开后同时下载弹幕/字幕（xml） |
+| Download tasks / 下载任务 | Shows each task's progress and status; click "Open folder" when done/显示每个任务的进度、状态；完成后可点「打开文件夹」查看 |
 
 Downloaded files are saved in the **`downloads`** folder inside the program folder.
 下载的文件保存在程序文件夹下的 **`downloads`** 目录中。
