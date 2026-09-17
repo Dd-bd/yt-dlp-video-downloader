@@ -6,6 +6,11 @@
 
 > 目前仅支持 **Windows**。
 
+[![Python](https://img.shields.io/badge/Python-3.8%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![Platform](https://img.shields.io/badge/Platform-Windows-0078D6?logo=windows&logoColor=white)]()
+[![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
+[![yt-dlp](https://img.shields.io/badge/Powered_by-yt--dlp-orange)](https://github.com/yt-dlp/yt-dlp)
+
 ---
 
 ## 功能特性
@@ -17,6 +22,20 @@
 - 📊 实时进度条（视频 / 音频双进度）
 - ⏳ 最多 3 个任务并发下载，其余自动排队
 - 🔑 Cookie 登录，可下载需登录/会员可看的内容
+- 📦 内置 ffmpeg，开箱即用，无需额外下载
+
+---
+
+## 📥 快速下载（推荐）
+
+到本仓库右侧 **Releases** 页面下载最新版 **Source code (zip)**（已内置 `ffmpeg.exe`）：
+
+1. 解压 zip 到任意文件夹
+2. 按下方「准备工作」装好 Python（一次即可）
+3. 双击 `install.bat` 安装依赖（ffmpeg 已内置，仅需自动下载 deno）
+4. 双击 `start.bat` 使用
+
+> 开发者也可以直接 `git clone` 本仓库，然后按「快速开始」运行。
 
 ---
 
@@ -45,7 +64,7 @@
 
 ## 二、快速开始
 
-1. 双击 **`install.bat`** —— 自动安装依赖、下载 deno 和 ffmpeg（首次约需几分钟）
+1. 双击 **`install.bat`** —— 自动安装依赖并下载 deno（ffmpeg 已随仓库内置，首次约需几分钟）
 2. （建议）把 `cookies.txt` 放入本文件夹——YouTube/B站 等站点登录后可下更高画质
 3. 双击 **`start.bat`** —— 弹出图形界面，粘贴链接即可下载
 
@@ -85,9 +104,9 @@ Cookie 是可选配置：不配置也能下载部分网站，但 YouTube、B站 
 该视频本身没有 4K 版本，yt-dlp 会自动回退到最接近的清晰度。
 
 **Q6：deno 或 ffmpeg 下载失败？**
-手动下载：
-- deno：<https://github.com/denoland/deno/releases>（下载 Windows 版 zip，解压出 `deno.exe` 放入本文件夹）
-- ffmpeg：<https://www.gyan.dev/ffmpeg/builds/>（下载后解压，把 `bin\ffmpeg.exe` 放入本文件夹）
+- ffmpeg 已随仓库内置（`ffmpeg.exe`），一般无需下载；如被误删，双击 `download_ffmpeg.bat` 即可重新下载。
+- deno：重新双击 `install.bat` 重试，或手动下载 <https://github.com/denoland/deno/releases>（Windows 版 zip，解压出 `deno.exe` 放入本文件夹）。
+- 也可用 winget 一键安装：`winget install DenoLand.Deno`、`winget install Gyan.FFmpeg`。
 
 **Q7：端口被占用怎么办？**
 程序会自动更换可用端口，无需处理。
@@ -119,15 +138,18 @@ pyinstaller app.spec
 
 ```
 yt-dlp-video-downloader/
-├── app.py              # 主程序（Flask + pywebview 图形界面）
-├── app.spec            # PyInstaller 打包配置
-├── templates/          # 界面模板
+├── app.py                  # 主程序（Flask + pywebview 图形界面）
+├── app.spec                # PyInstaller 打包配置
+├── templates/              # 界面模板
 │   └── index.html
-├── requirements.txt    # Python 依赖清单
-├── install.bat         # 一键安装（依赖 + deno + ffmpeg）
-├── start.bat           # 启动脚本
-├── icon.ico            # 程序图标
-└── LICENSE             # MIT 许可证
+├── requirements.txt        # Python 依赖清单
+├── install.bat             # 一键安装（依赖 + deno）
+├── start.bat               # 启动脚本
+├── download_ffmpeg.bat     # 单独下载 ffmpeg 的一键脚本
+├── download_ffmpeg.ps1     # ffmpeg 下载逻辑（被上面两个脚本调用）
+├── ffmpeg.exe              # 内置 ffmpeg（essentials 版，用于音视频合并）
+├── icon.ico                # 程序图标
+└── LICENSE                 # MIT 许可证
 ```
 
 ## 许可
