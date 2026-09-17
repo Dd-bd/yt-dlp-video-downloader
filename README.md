@@ -1,12 +1,15 @@
 # YT-DLP Video Downloader · YT-DLP 视频下载器
 
 A **graphical** video download tool based on [yt-dlp](https://github.com/yt-dlp/yt-dlp) — no commands to memorize, just paste a link and download.
+
 一个基于 [yt-dlp](https://github.com/yt-dlp/yt-dlp) 的**图形化**视频下载工具，无需记命令，粘贴链接即可下载。
 
 Supports **1800+ sites** (YouTube, Bilibili, Douyin web, TikTok, Niconico, etc.). Download video, audio, and danmaku/subtitles, up to **4K**.
+
 支持 **1800+ 网站**（YouTube、B站、抖音网页版、TikTok、Niconico 等），可下载视频、音频、弹幕/字幕，最高 **4K**。
 
 > Currently supports **Windows** only, and requires **Python 3.8 or newer**.
+
 > 目前仅支持 **Windows**，需 **Python 3.8 及以上**。
 
 [![Python](https://img.shields.io/badge/Python-3.8%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
@@ -18,13 +21,20 @@ Supports **1800+ sites** (YouTube, Bilibili, Douyin web, TikTok, Niconico, etc.)
 
 ## Features · 功能特性
 
-- 🎬 Paste links to download with one click; supports **batch download** (one link per line, including playlists) / 粘贴链接一键下载，支持一行一条**批量下载**（含播放列表）
-- 🎯 Choose resolution (up to 4K) and auto-merge the best audio/video / 自选清晰度（最高 4K），自动合并最佳音视频
-- 🎵 Download audio only / 单独下载音频
-- 📄 Download danmaku/subtitles at the same time (xml format, works for Bilibili danmaku) / 同时下载弹幕/字幕（xml 格式，B站弹幕可用）
-- 📊 Real-time progress bar (dual progress for video / audio) / 实时进度条（视频 / 音频双进度）
-- ⏳ Up to 3 concurrent downloads, the rest are queued automatically / 最多 3 个任务并发下载，其余自动排队
-- 🔑 Cookie login to download content that requires login/membership / Cookie 登录，可下载需登录/会员可看的内容
+- 🎬 Paste links to download with one click; supports **batch download** (one link per line, including playlists) 
+-    粘贴链接一键下载，支持一行一条**批量下载**（含播放列表）
+- 🎯 Choose resolution (up to 4K) and auto-merge the best audio/video 
+-    自选清晰度（最高 4K），自动合并最佳音视频
+- 🎵 Download audio only 
+-    单独下载音频
+- 📄 Download danmaku/subtitles at the same time (xml format, works for Bilibili danmaku)
+-    同时下载弹幕/字幕（xml 格式，B站弹幕可用）
+- 📊 Real-time progress bar (dual progress for video / audio)
+-    实时进度条（视频 / 音频双进度）
+- ⏳ Up to 3 concurrent downloads, the rest are queued automatically
+-    最多 3 个任务并发下载，其余自动排队
+- 🔑 Cookie login to download content that requires login/membership
+-    Cookie 登录，可下载需登录/会员可看的内容
 
 ---
 
@@ -38,6 +48,7 @@ Supports **1800+ sites** (YouTube, Bilibili, Douyin web, TikTok, Niconico, etc.)
 | cookies.txt | Optional but strongly recommended (required for high quality on YouTube/Bilibili) / 可选，强烈建议（YouTube/B站 高画质必需） |
 
 > Both `deno.exe` and `ffmpeg.exe` are **downloaded automatically** to the program folder by the scripts — no manual preparation needed. If a download fails due to network issues, see the FAQ below.
+
 > `deno.exe` 和 `ffmpeg.exe` 都会由脚本**自动下载**到程序文件夹，无需手动准备；如网络原因下载失败，见下方 FAQ。
 
 ---
@@ -46,28 +57,36 @@ Supports **1800+ sites** (YouTube, Bilibili, Douyin web, TikTok, Niconico, etc.)
 
 ### 1. Get the program · 获取程序
 
-- **Release users** / **Release 用户**: Go to the **Releases** page on the right side of the repo, download the latest **Source code (zip)**, and extract it to any folder. / 到仓库右侧 **Releases** 页面下载最新版 **Source code (zip)**，解压到任意文件夹。
+- **Release users** / **Release 用户**: Go to the **Releases** page on the right side of the repo, download the latest **Source code (zip)**, and extract it to any folder. 
+- 到仓库右侧 **Releases** 页面下载最新版 **Source code (zip)**，解压到任意文件夹。
 - **Developers** / **开发者**: `git clone` this repository. / `git clone` 本仓库。
 
 ### 2. Install Python · 装好 Python
 
 Open <https://www.python.org/downloads/> to download and install it. ⚠️ **Make sure to check "Add Python to PATH"** at the bottom during installation.
+
 打开 <https://www.python.org/downloads/> 下载安装，⚠️ 安装时**务必勾选底部 "Add Python to PATH"**。
 
-> Verify / 验证: press `Win + R`, type `cmd` and press Enter, then run `python --version`. If a version number is shown, it's ready. / 按 `Win + R` 输入 `cmd` 回车，输入 `python --version`，能显示版本号即成功。
+> Verify / 验证: press `Win + R`, type `cmd` and press Enter, then run `python --version`. If a version number is shown, it's ready.
+> 按 `Win + R` 输入 `cmd` 回车，输入 `python --version`，能显示版本号即成功。
 
 ### 3. One-click install · 一键安装
 
 Double-click **`install.bat` and `download_ffmpeg.bat`**; they will do three things automatically (the first run takes a few minutes):
+
 双击 **`install.bat`和`download_ffmpeg.bat`**，会自动完成三件事（首次约需几分钟）：
 
-1. Install Python dependencies (`yt-dlp`, `flask`, `pywebview`, `psutil`) / 安装 Python 依赖（`yt-dlp`、`flask`、`pywebview`、`psutil`）
-2. Download `deno.exe` (yt-dlp's JS runtime) / 下载 `deno.exe`（yt-dlp 的 JS 运行时）
-3. Download `ffmpeg.exe` (used to merge audio/video) / 下载 `ffmpeg.exe`（用于合并音视频）
+1. Install Python dependencies (`yt-dlp`, `flask`, `pywebview`, `psutil`)
+   安装 Python 依赖（`yt-dlp`、`flask`、`pywebview`、`psutil`）
+2. Download `deno.exe` (yt-dlp's JS runtime)
+   下载 `deno.exe`（yt-dlp 的 JS 运行时）
+3. Download `ffmpeg.exe` (used to merge audio/video)
+   下载 `ffmpeg.exe`（用于合并音视频）
 
 ### 4. Launch · 启动
 
 Double-click **`start.bat`**; the GUI opens and you can paste a link to download. From then on, just double-click `start.bat` each time.
+
 双击 **`start.bat`**，弹出图形界面，粘贴链接即可下载。之后每次使用只需双击 `start.bat`。
 
 ---
@@ -75,14 +94,20 @@ Double-click **`start.bat`**; the GUI opens and you can paste a link to download
 ## Export browser cookies (important) · 导出浏览器 Cookie（重要）
 
 Many sites (YouTube, Bilibili, etc.) won't let you download, or only offer low quality, unless you're logged in. Export your browser login state to `cookies.txt`:
+
 很多网站（YouTube、B站等）不登录就无法下载或只能下低清晰度。需要把浏览器登录状态导出成 `cookies.txt`：
 
-1. In **Chrome or Edge**, install the **"Get cookies.txt LOCALLY"** extension (search for it in the store) / 用 **Chrome 或 Edge**，安装扩展 **"Get cookies.txt LOCALLY"**（应用商店搜索即可）
-2. Open the target site (e.g. YouTube) and **log in** / 打开目标网站（如 YouTube）并**登录**
-3. Click the extension icon → **Export** → save the file / 点击扩展图标 → **Export** → 保存文件
-4. Rename the file to **`cookies.txt`** and put it in **the program folder** (same level as `app.py`) / 把文件改名为 **`cookies.txt`**，放到**本程序文件夹**（和 `app.py` 同级）
+1. In **Chrome or Edge**, install the **"Get cookies.txt LOCALLY"** extension (search for it in the store)
+   用 **Chrome 或 Edge**，安装扩展 **"Get cookies.txt LOCALLY"**（应用商店搜索即可）
+2. Open the target site (e.g. YouTube) and **log in**
+   打开目标网站（如 YouTube）并**登录**
+3. Click the extension icon → **Export** → save the file
+   点击扩展图标 → **Export** → 保存文件
+4. Rename the file to **`cookies.txt`** and put it in **the program folder** (same level as `app.py`)
+   把文件改名为 **`cookies.txt`**，放到**本程序文件夹**（和 `app.py` 同级）
 
 > You can still download from some sites without a Cookie, but it may fail or be limited in quality.
+
 > 不配置 Cookie 也能下载部分网站，只是可能失败或画质受限。
 
 ---
