@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YT-DLP 视频下载器</title>
+    <style>
+        :root {
+            --bg: #0b0b12;
+            --card: rgba(26, 26, 38, 0.72);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --text: #ececf2;
+            --muted: #9b9ba8;
+            --faint: #6b6b78;
+            --primary: #a855f7;
+            --primary-2: #7c3aed;
+            --accent: #f0abfc;
+            --ok: #22c55e;
+            --err: #ef4444;
+            --warn: #f59e0b;
+            --input-bg: rgba(255, 255, 255, 0.04);
+            --radius: 18px;
+            --font: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei",
+                    "PingFang SC", "Helvetica Neue", sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font);
+            background-color: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 40px 20px 60px;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+
+        /* 背景光晕 */
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(640px 420px at 12% 8%, rgba(124, 58, 237, 0.28), transparent 62%),
+                radial-gradient(720px 520px at 88% 18%, rgba(168, 85, 247, 0.20), transparent 60%),
+                radial-gradient(560px 480px at 50% 105%, rgba(240, 171, 252, 0.12), transparent 60%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 840px;
+            margin: 0 auto;
+        }
+
+        /* 顶部品牌区 */
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .brand-logo {
+            width: 52px;
+            height: 52px;
+            flex-shrink: 0;
+            display: grid;
+            place-items: center;
+            border-radius: 16px;
+            background: linear-gradient(135deg, var(--primary-2), var(--primary));
+            box-shadow: 0 8px 24px rgba(168, 85, 247, 0.35);
+        }
+        .brand-logo svg {
+            width: 28px;
+            height: 28px;
+            stroke: #fff;
+        }
+        .brand h1 {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+        .brand-sub {
+            margin-top: 3px;
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        /* 卡片 */
+        .card {
+            background: var(--card);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius);
+            padding: 28px;
+            margin-bottom: 22px;
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            box-shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
+        }
+
+        /* 表单字段 */
+        .field {
+            margin-bottom: 20px;
+        }
+        .field > label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 9px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #d6d6e0;
+        }
+        .field > label svg {
+            width: 16px;
+            height: 16px;
+            stroke: var(--accent);
+        }
+        .field-hint {
+            margin-top: 7px;
+            font-size: 12px;
+            color: var(--faint);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 13px 16px;
+            background: var(--input-bg);
+            border: 1px solid rgba(255, 255, 255, 0.09);
+            border-radius: 12px;
+            color: #fff;
+            font-size: 15px;
+            font-family: inherit;
+            transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+        }
+        textarea {
+            min-height: 112px;
+            resize: vertical;
+            line-height: 1.7;
+        }
+        input::placeholder, textarea::placeholder {
+            color: var(--faint);
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.16);
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        /* 链接输入框 + 清空按钮 */
+        .textarea-wrap {
+            position: relative;
+        }
+        .textarea-wrap textarea {
+            padding-right: 46px;
+        }
+        .icon-btn {
+            border: none;
+            background: transparent;
+            color: var(--faint);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6px;
+            border-radius: 8px;
+            transition: color 0.15s, background 0.15s;
+        }
+        .icon-btn:hover {
+            color: var(--text);
+            background: rgba(255, 255, 255, 0.07);
+        }
+        .icon-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+        .clear-url {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+
+        /* 清晰度下拉框 */
+        select {
+            appearance: none;
+            -webkit-appearance: none;
+            cursor: pointer;
+            padding-right: 42px;
+            background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239b9ba8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+        }
+        select option {
+            background: #1a1a24;
+            color: #fff;
+        }
+
+        /* 弹幕开关 */
+        .toggle-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 13px 16px;
+            background: var(--input-bg);
+            border: 1px solid rgba(255, 255, 255, 0.09);
+            border-radius: 12px;
+        }
+        .toggle-row > label {
+            margin: 0;
+            cursor: pointer;
+        }
+        .switch {
+            position: relative;
+            width: 44px;
+            height: 24px;
+            flex-shrink: 0;
+        }
+        .switch input {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            opacity: 0;
+            cursor: pointer;
+            z-index: 1;
+        }
+        .switch .slider {
+            position: absolute;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.14);
+            border-radius: 999px;
+            transition: background 0.2s;
+            cursor: pointer;
+        }
+        .switch .slider::before {
+            content: "";
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            left: 3px;
+            top: 3px;
+            background: #fff;
+            border-radius: 50%;
+            transition: transform 0.2s;
+        }
+        .switch input:checked + .slider {
+            background: linear-gradient(135deg, var(--primary-2), var(--primary));
+        }
+        .switch input:checked + .slider::before {
+            transform: translateX(20px);
+        }
+
+        /* 下载按钮 */
+        .primary-btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 13px;
+            background: linear-gradient(135deg, var(--primary-2), var(--primary));
+            color: #fff;
+            font-size: 16px;
+            font-weight: 700;
+            font-family: inherit;
+            letter-spacing: 2px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: transform 0.15s, box-shadow 0.2s, opacity 0.2s;
+            box-shadow: 0 8px 24px rgba(168, 85, 247, 0.35);
+        }
+        .primary-btn:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 12px 30px rgba(168, 85, 247, 0.5);
+        }
+        .primary-btn:active:not(:disabled) {
+            transform: translateY(0);
+        }
+        .primary-btn:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+        .primary-btn svg {
+            width: 18px;
+            height: 18px;
+            stroke: #fff;
+        }
+
+        /* 任务区 */
+        .tasks-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 18px;
+        }
+        .tasks-head h2 {
+            font-size: 16px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .tasks-head h2 svg {
+            width: 18px;
+            height: 18px;
+            stroke: var(--accent);
+        }
+        .ghost-btn {
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--muted);
+            font-size: 12px;
+            font-family: inherit;
+            padding: 7px 14px;
+            border-radius: 999px;
+            cursor: pointer;
+            transition: color 0.15s, border-color 0.15s, background 0.15s;
+        }
+        .ghost-btn:hover {
+            color: var(--text);
+            border-color: rgba(255, 255, 255, 0.25);
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .task-list {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+        .empty-tip {
+            text-align: center;
+            color: var(--faint);
+            font-size: 13px;
+            padding: 26px 0;
+        }
+
+        /* 单个任务卡片 */
+        .task {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            padding: 16px;
+            animation: taskIn 0.3s ease;
+        }
+        @keyframes taskIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .task.done {
+            border-color: rgba(34, 197, 94, 0.45);
+            background: rgba(34, 197, 94, 0.06);
+        }
+        .task.error {
+            border-color: rgba(239, 68, 68, 0.45);
+            background: rgba(239, 68, 68, 0.06);
+        }
+
+        .task-top {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .badge {
+            flex-shrink: 0;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+        .badge .dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+        .badge.running .dot {
+            animation: pulse 1s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.35; transform: scale(0.7); }
+        }
+        .badge.queued { color: var(--warn); background: rgba(245, 158, 11, 0.12); }
+        .badge.running { color: var(--primary); background: rgba(168, 85, 247, 0.14); }
+        .badge.done { color: var(--ok); background: rgba(34, 197, 94, 0.14); }
+        .badge.error { color: var(--err); background: rgba(239, 68, 68, 0.14); }
+        .badge.unknown { color: var(--muted); background: rgba(255, 255, 255, 0.08); }
+
+        .task-link {
+            flex: 1;
+            min-width: 0;
+            font-size: 13px;
+            color: #c4b5fd;
+            word-break: break-all;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+        .task-remove {
+            flex-shrink: 0;
+        }
+        .task-remove:hover {
+            color: var(--err);
+        }
+
+        .task-msg {
+            font-size: 13px;
+            color: #c9c9d4;
+            margin-bottom: 12px;
+            min-height: 18px;
+        }
+
+        /* 进度条 */
+        .progress {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 999px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            border-radius: 999px;
+            background: linear-gradient(90deg, var(--primary-2), var(--primary));
+            transition: width 0.45s ease;
+        }
+        .task.done .progress-fill {
+            background: linear-gradient(90deg, #16a34a, var(--ok));
+        }
+        .task.error .progress-fill {
+            background: linear-gradient(90deg, #dc2626, var(--err));
+        }
+
+        .total-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .total-row .progress {
+            flex: 1;
+        }
+        .total-row .pct {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text);
+            min-width: 42px;
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* 音视频双条 */
+        .sub-bars {
+            display: flex;
+            gap: 14px;
+        }
+        .sub-bar {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .sub-bar .tag {
+            font-size: 11px;
+            color: var(--faint);
+            flex-shrink: 0;
+        }
+        .sub-bar .progress {
+            flex: 1;
+            height: 4px;
+        }
+        .sub-bar .pct {
+            font-size: 11px;
+            color: var(--muted);
+            min-width: 34px;
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .task-actions {
+            margin-top: 14px;
+            display: flex;
+            gap: 10px;
+        }
+        .open-btn {
+            border: 1px solid rgba(168, 85, 247, 0.4);
+            background: rgba(168, 85, 247, 0.12);
+            color: #d8b4fe;
+            font-size: 12px;
+            font-family: inherit;
+            padding: 8px 14px;
+            border-radius: 10px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            transition: background 0.15s, border-color 0.15s;
+        }
+        .open-btn:hover {
+            background: rgba(168, 85, 247, 0.2);
+            border-color: rgba(168, 85, 247, 0.7);
+        }
+        .open-btn svg {
+            width: 15px;
+            height: 15px;
+            stroke: currentColor;
+        }
+
+        .footer-tip {
+            text-align: center;
+            color: var(--faint);
+            font-size: 12px;
+            margin-top: 24px;
+        }
+
+        @media (max-width: 560px) {
+            .card { padding: 20px; }
+            .brand h1 { font-size: 20px; }
+            .sub-bars { flex-direction: column; gap: 8px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="brand">
+            <div class="brand-logo">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 3v12"/>
+                    <path d="m7 10 5 5 5-5"/>
+                    <path d="M5 21h14"/>
+                </svg>
+            </div>
+            <div>
+                <h1>YT-DLP 视频下载器</h1>
+                <p class="brand-sub">双引擎架构 · 支持 1800+ 站点 · 最高 4K · Cookie 登录</p>
+            </div>
+        </header>
+
+        <section class="card">
+            <div class="field">
+                <label>
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                        <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+                    </svg>
+                    视频链接
+                </label>
+                <div class="textarea-wrap">
+                    <textarea id="url" placeholder="粘贴链接，一行一条；支持播放列表批量下载"></textarea>
+                    <button class="icon-btn clear-url" id="clearUrl" title="清空链接">
+                        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="field-hint">
+                    <span>一行一条，播放列表链接也可以</span>
+                    <span><b id="urlCount">0</b> 条链接</span>
+                </div>
+            </div>
+
+            <div class="field">
+                <label>
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/>
+                    </svg>
+                    保存文件名
+                </label>
+                <input id="filename" placeholder="留空自动使用视频标题；批量下载自动加序号">
+            </div>
+
+            <div class="field">
+                <label>
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="5" width="18" height="14" rx="2"/><path d="m9 9 6 6"/><path d="m15 9-6 6"/>
+                    </svg>
+                    视频清晰度
+                </label>
+                <select id="format">
+                    <option value="bestvideo+bestaudio/best">🏆 最高画质 - 自动最佳音视频合并</option>
+                    <option value="bestvideo[height<=2160]+bestaudio/best[height<=2160]">🌟 4K 2160p</option>
+                    <option value="bestvideo[height<=1440]+bestaudio/best[height<=1440]">💎 2K 1440p</option>
+                    <option value="bestvideo[height<=1080]+bestaudio/best[height<=1080]">✨ 1080p 全高清</option>
+                    <option value="bestvideo[height<=720]+bestaudio/best[height<=720]">📺 720p 高清</option>
+                    <option value="bestvideo[height<=480]+bestaudio/best[height<=480]">📱 480p</option>
+                    <option value="bestvideo[height<=360]+bestaudio/best[height<=360]">📶 360p</option>
+                    <option value="bestaudio">🎵 仅下载音频 - 最高音质</option>
+                </select>
+            </div>
+
+            <div class="field toggle-row">
+                <label for="writeSubs">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                    </svg>
+                    同时下载弹幕（xml）
+                </label>
+                <span class="switch">
+                    <input type="checkbox" id="writeSubs">
+                    <span class="slider"></span>
+                </span>
+            </div>
+
+            <button class="primary-btn" id="startBtn">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/>
+                </svg>
+                开始下载
+            </button>
+        </section>
+
+        <section class="card">
+            <div class="tasks-head">
+                <h2>
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>
+                    </svg>
+                    下载任务
+                </h2>
+                <button class="ghost-btn" id="clearDone">清除已完成</button>
+            </div>
+            <div class="task-list" id="taskList">
+                <div class="empty-tip" id="emptyTip">还没有任务，粘贴链接开始下载吧</div>
+            </div>
+        </section>
+
+        <p class="footer-tip">Powered by yt‑dlp · 请遵守网站协议，仅用于个人合法使用</p>
+    </div>
+
+<script>
+const AUTH_TOKEN = "{{ auth_token }}";
+const startBtn = document.getElementById('startBtn');
+const urlArea = document.getElementById('url');
+const filenameInput = document.getElementById('filename');
+const formatSelect = document.getElementById('format');
+const writeSubsCheck = document.getElementById('writeSubs');
+const taskListEl = document.getElementById('taskList');
+const emptyTip = document.getElementById('emptyTip');
+const urlCount = document.getElementById('urlCount');
+const clearUrl = document.getElementById('clearUrl');
+const clearDone = document.getElementById('clearDone');
+
+let taskMap = {};
+
+const STATUS_TEXT = {
+    queued: "排队中",
+    running: "下载中",
+    done: "已完成",
+    error: "失败",
+    unknown: "未知"
+};
+
+function updateCount() {
+    const n = urlArea.value.split("\n").map(u => u.trim()).filter(u => u).length;
+    urlCount.textContent = n;
+}
+
+urlArea.addEventListener("input", updateCount);
+
+clearUrl.addEventListener("click", () => {
+    urlArea.value = "";
+    updateCount();
+    urlArea.focus();
+});
+
+function clamp(v, lo, hi) {
+    return Math.max(lo, Math.min(hi, v));
+}
+
+startBtn.onclick = async () => {
+    const rawText = urlArea.value.trim();
+    if (!rawText) {
+        alert("请粘贴视频链接！一行一条支持批量");
+        return;
+    }
+    const urlList = rawText.split("\n").map(u => u.trim()).filter(u => u);
+    const baseName = filenameInput.value.trim();
+    const fmt = formatSelect.value;
+    const needSub = writeSubsCheck.checked;
+
+    startBtn.disabled = true;
+    startBtn.innerText = "任务提交中...";
+
+    for (let i = 0; i < urlList.length; i++) {
+        const link = urlList[i];
+        const saveName = baseName ? `${baseName}_${i + 1}` : "";
+        try {
+            const res = await fetch("/start", {
+                method: "POST",
+                headers: { "Content-Type": "application/json", "X-Auth-Token": AUTH_TOKEN },
+                body: JSON.stringify({ url: link, filename: saveName, format: fmt, writeSubs: needSub })
+            });
+            const data = await res.json();
+            if (!res.ok || !data.task_id) {
+                console.error("提交失败", link, data);
+                continue;
+            }
+            createTaskDom(data.task_id, link);
+            pollTask(data.task_id);
+        } catch (e) {
+            console.error("提交失败", link, e);
+        }
+    }
+
+    startBtn.disabled = false;
+    startBtn.innerHTML = `
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/>
+        </svg>
+        开始下载
+    `;
+};
+
+function createTaskDom(taskId, link) {
+    if (emptyTip) emptyTip.remove();
+
+    const task = document.createElement("div");
+    task.className = "task";
+    task.id = `task_${taskId}`;
+
+    // 顶部：状态徽章 + 链接 + 删除
+    const top = document.createElement("div");
+    top.className = "task-top";
+
+    const badge = document.createElement("span");
+    badge.className = "badge queued";
+    const dot = document.createElement("span");
+    dot.className = "dot";
+    const badgeText = document.createElement("span");
+    badgeText.textContent = "排队中";
+    badge.appendChild(dot);
+    badge.appendChild(badgeText);
+
+    const linkEl = document.createElement("div");
+    linkEl.className = "task-link";
+    linkEl.textContent = link;   // textContent 转义，防 XSS
+
+    const removeBtn = document.createElement("button");
+    removeBtn.className = "icon-btn task-remove";
+    removeBtn.title = "移除该任务";
+    removeBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/></svg>`;
+    removeBtn.addEventListener("click", () => removeTask(taskId));
+
+    top.appendChild(badge);
+    top.appendChild(linkEl);
+    top.appendChild(removeBtn);
+
+    // 消息
+    const msg = document.createElement("div");
+    msg.className = "task-msg";
+    msg.textContent = "等待加入队列...";
+
+    // 总进度条
+    const totalRow = document.createElement("div");
+    totalRow.className = "total-row";
+    const totalBar = document.createElement("div");
+    totalBar.className = "progress";
+    const totalFill = document.createElement("div");
+    totalFill.className = "progress-fill total";
+    totalBar.appendChild(totalFill);
+    const totalPct = document.createElement("span");
+    totalPct.className = "pct total";
+    totalPct.textContent = "0%";
+    totalRow.appendChild(totalBar);
+    totalRow.appendChild(totalPct);
+
+    // 音视频双条
+    const subBars = document.createElement("div");
+    subBars.className = "sub-bars";
+
+    const vBar = makeSubBar("视频");
+    const aBar = makeSubBar("音频");
+    subBars.appendChild(vBar.wrap);
+    subBars.appendChild(aBar.wrap);
+
+    // 操作按钮区
+    const actions = document.createElement("div");
+    actions.className = "task-actions";
+    const openBtn = document.createElement("button");
+    openBtn.className = "open-btn";
+    openBtn.hidden = true;
+    openBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>打开文件夹`;
+    openBtn.addEventListener("click", openFolder);
+    actions.appendChild(openBtn);
+
+    task.appendChild(top);
+    task.appendChild(msg);
+    task.appendChild(totalRow);
+    task.appendChild(subBars);
+    task.appendChild(actions);
+    taskListEl.appendChild(task);
+
+    taskMap[taskId] = {
+        dom: task,
+        timer: null,
+        status: "queued",
+        refs: {
+            badge, badgeText, msg, totalFill, totalPct,
+            videoFill: vBar.fill, audioFill: aBar.fill,
+            videoPct: vBar.pct, audioPct: aBar.pct,
+            openBtn
+        }
+    };
+
+    task.scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
+
+function makeSubBar(tag) {
+    const wrap = document.createElement("div");
+    wrap.className = "sub-bar";
+    const label = document.createElement("span");
+    label.className = "tag";
+    label.textContent = tag;
+    const bar = document.createElement("div");
+    bar.className = "progress";
+    const fill = document.createElement("div");
+    fill.className = "progress-fill";
+    bar.appendChild(fill);
+    const pct = document.createElement("span");
+    pct.className = "pct";
+    pct.textContent = "0%";
+    wrap.appendChild(label);
+    wrap.appendChild(bar);
+    wrap.appendChild(pct);
+    return { wrap, fill, pct };
+}
+
+function removeTask(taskId) {
+    const entry = taskMap[taskId];
+    if (!entry) return;
+    if (entry.timer) clearInterval(entry.timer);
+    entry.dom.remove();
+    delete taskMap[taskId];
+    if (Object.keys(taskMap).length === 0 && !document.getElementById('emptyTip')) {
+        const tip = document.createElement("div");
+        tip.className = "empty-tip";
+        tip.id = "emptyTip";
+        tip.textContent = "还没有任务，粘贴链接开始下载吧";
+        taskListEl.appendChild(tip);
+    }
+}
+
+function pollTask(taskId) {
+    const entry = taskMap[taskId];
+    if (!entry) return;
+    const r = entry.refs;
+
+    const timer = setInterval(async () => {
+        try {
+            const resp = await fetch(`/progress/${taskId}`, {
+                headers: { "X-Auth-Token": AUTH_TOKEN }
+            });
+            const p = await resp.json();
+
+            entry.status = p.status;
+            r.badge.className = "badge " + (p.status || "unknown");
+            r.badgeText.textContent = STATUS_TEXT[p.status] || p.status;
+            r.msg.textContent = p.msg || "";
+
+            const t = clamp(p.total_percent || 0, 0, 100);
+            const v = clamp(p.video_percent || 0, 0, 100);
+            const a = clamp(p.audio_percent || 0, 0, 100);
+            r.totalFill.style.width = t + "%";
+            r.videoFill.style.width = v + "%";
+            r.audioFill.style.width = a + "%";
+            r.totalPct.textContent = Math.round(t) + "%";
+            r.videoPct.textContent = Math.round(v) + "%";
+            r.audioPct.textContent = Math.round(a) + "%";
+
+            if (p.status === "done") {
+                clearInterval(timer);
+                entry.dom.classList.add("done");
+                r.openBtn.hidden = false;
+            } else if (p.status === "error") {
+                clearInterval(timer);
+                entry.dom.classList.add("error");
+            }
+        } catch (e) {
+            clearInterval(timer);
+            r.msg.textContent = "⚠️ 后端连接中断";
+            r.badge.className = "badge error";
+            r.badgeText.textContent = "失败";
+        }
+    }, 800);
+    entry.timer = timer;
+}
+
+async function openFolder() {
+    try {
+        await fetch("/open", {
+            method: "POST",
+            headers: { "X-Auth-Token": AUTH_TOKEN }
+        });
+    } catch (e) {
+        console.error("打开文件夹失败", e);
+    }
+}
+
+clearDone.addEventListener("click", () => {
+    Object.keys(taskMap).forEach(id => {
+        const entry = taskMap[id];
+        if (entry.status === "done" || entry.status === "error") {
+            removeTask(id);
+        }
+    });
+});
+</script>
+</body>
+</html>

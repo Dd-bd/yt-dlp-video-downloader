@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# 敏感 / 隐私 —— 切勿上传
+cookies.txt
+*cookies.txt
+downloads/
+
+# install.bat 运行时自动下载的二进制（会重新生成）
+deno.exe
+ffmpeg.exe
+deno.zip
+ffmpeg.zip
+deno_tmp/
+ffmpeg_tmp/
+
+# 日志
+app.log
+*.log
+
+# 打包产物
+build/
+dist/
+
+# 系统文件
+.DS_Store
+Thumbs.db
+desktop.ini
