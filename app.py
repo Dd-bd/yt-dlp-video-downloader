@@ -82,6 +82,14 @@ def find_deno():
     return shutil.which("deno")
 
 
+def find_ffmpeg():
+    """优先使用程序目录下的 ffmpeg.exe，其次查找 PATH。"""
+    local = os.path.join(BASE_DIR, "ffmpeg.exe")
+    if os.path.exists(local):
+        return local
+    return shutil.which("ffmpeg")
+
+
 def sanitize_filename(name):
     """去掉 Windows 文件名非法字符和路径分隔符，防止路径穿越。"""
     name = re.sub(r'[<>:"/\\|?*\x00-\x1f]', "_", name)
@@ -152,14 +160,6 @@ def download_task(url, format_code, save_name, task_id, write_subs):
     proc = None
     worker_semaphore.acquire()  # 阻塞直到有空闲槽位，实现真正的 MAX_WORKER 并发限制
     try:
-        if not os.path.exists(COOKIE_FILE):
-            safe_set_progress(task_id, {
-                "status": "error",
-                "msg": "❌ 缺少 cookies.txt，请导出 Cookie 放入项目文件夹",
-                "video_percent": 0, "audio_percent": 0, "total_percent": 0,
-            })
-            return
-
         if not find_deno():
             safe_set_progress(task_id, {
                 "status": "error",
@@ -168,15 +168,18 @@ def download_task(url, format_code, save_name, task_id, write_subs):
             })
             return
 
+        # cookies.txt 变为可选：有则传给 yt-dlp，无则警告后继续（部分站点仍可下载）。
+        cookies_ok = os.path.exists(COOKIE_FILE)
         safe_set_progress(task_id, {
             "status": "running",
-            "msg": "🔍 开始解析视频...",
+            "msg": ("⚠️ 未找到 cookies.txt，部分网站可能失败或画质受限，继续尝试…"
+                    if not cookies_ok else "🔍 开始解析视频..."),
             "video_percent": 0, "audio_percent": 0, "total_percent": 0,
         })
 
-        cmd = ["python", "-m", "yt_dlp",
-               "--cookies", COOKIE_FILE,
-               "--js-runtimes", "deno"]
+        cmd = [sys.executable, "-m", "yt_dlp", "--js-runtimes", "deno"]
+        if cookies_ok:
+            cmd += ["--cookies", COOKIE_FILE]
         if REMOTE_EJS:
             cmd += ["--remote-components", "ejs:github"]
         cmd += ["--no-continue",          # 有意禁用续传，避免半成品/损坏文件
@@ -295,7 +298,12 @@ def check_auth():
 
 @app.route("/", methods=["GET"])
 def index():
-    return render_template("index.html", auth_token=AUTH_TOKEN)
+    return render_template(
+        "index.html",
+        auth_token=AUTH_TOKEN,
+        ffmpeg_ok=find_ffmpeg() is not None,
+        cookies_ok=os.path.exists(COOKIE_FILE),
+    )
 
 
 @app.route("/start", methods=["POST"])

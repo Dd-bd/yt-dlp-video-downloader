@@ -93,6 +93,28 @@
             color: var(--muted);
         }
 
+        /* 警告横幅 */
+        .warn-banner {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 14px 16px;
+            margin-bottom: 22px;
+            background: rgba(245, 158, 11, 0.10);
+            border: 1px solid rgba(245, 158, 11, 0.35);
+            border-radius: 12px;
+            color: #fcd34d;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+        .warn-banner svg {
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+            stroke: var(--warn);
+            margin-top: 1px;
+        }
+
         /* 卡片 */
         .card {
             background: var(--card);
@@ -554,6 +576,26 @@
                 <p class="brand-sub">双引擎架构 · 支持 1800+ 站点 · 最高 4K · Cookie 登录</p>
             </div>
         </header>
+
+        {% if not cookies_ok %}
+        <div class="warn-banner">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                <path d="M12 9v4"/><path d="M12 17h.01"/>
+            </svg>
+            <span>未找到 cookies.txt：部分网站（YouTube、B站等）可能下载失败或画质受限。详见 README「导出浏览器 Cookie」一节。</span>
+        </div>
+        {% endif %}
+
+        {% if not ffmpeg_ok %}
+        <div class="warn-banner">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                <path d="M12 9v4"/><path d="M12 17h.01"/>
+            </svg>
+            <span>未检测到 ffmpeg：4K / 音视频合并将不可用，会自动回退到较低画质。请运行 install.bat 重新下载，或将 ffmpeg.exe 放入程序文件夹。</span>
+        </div>
+        {% endif %}
 
         <section class="card">
             <div class="field">

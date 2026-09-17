@@ -11,8 +11,8 @@ cookies.txt
 downloads/
 
 # install.bat 运行时自动下载的二进制（会重新生成）
+# ffmpeg.exe 已改为随仓库分发（essentials 版），不再忽略
 deno.exe
-ffmpeg.exe
 deno.zip
 ffmpeg.zip
 deno_tmp/
@@ -30,3 +30,4 @@ dist/
 .DS_Store
 Thumbs.db
 desktop.ini
+*.lnk

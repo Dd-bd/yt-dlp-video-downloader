@@ -46,7 +46,7 @@
 ## 二、快速开始
 
 1. 双击 **`install.bat`** —— 自动安装依赖、下载 deno 和 ffmpeg（首次约需几分钟）
-2. 确保 `cookies.txt` 已放入本文件夹
+2. （建议）把 `cookies.txt` 放入本文件夹——YouTube/B站 等站点登录后可下更高画质
 3. 双击 **`start.bat`** —— 弹出图形界面，粘贴链接即可下载
 
 > 之后每次使用只需双击 `start.bat`。
@@ -75,8 +75,8 @@ Python 未安装，或安装时没勾选 "Add Python to PATH"。重新安装 Pyt
 **Q2：启动后窗口空白 / 打不开界面？**
 通常是依赖没装完整。重新双击 `install.bat` 完成安装后再试。
 
-**Q3：提示「缺少 cookies.txt」？**
-说明你没导出 Cookie。详见上文「导出 Cookie」一节，导出后放入本文件夹。
+**Q3：顶部出现「未找到 cookies.txt」的黄色提示？**
+Cookie 是可选配置：不配置也能下载部分网站，但 YouTube、B站 等可能失败或画质受限。按上文「导出 Cookie」一节导出后放入本文件夹，重启程序即可消除提示。
 
 **Q4：下载失败，提示「链接或 Cookie 可能已失效」？**
 大概率是 Cookie 过期了（Cookie 一般几周内有效）。重新按上面步骤导出一份新的 `cookies.txt` 覆盖即可。
